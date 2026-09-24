@@ -67,3 +67,7 @@
         repo: "{{ petclinic_repo }}"
         dest: "{{ petclinic_source_dir }}"
         version: main
+    - name: Build Spring PetClinic
+      command:
+        cmd: mvn clean package -DskipTests
+        chdir: "{{ petclinic_source_dir }}"
