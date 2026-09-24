@@ -93,3 +93,9 @@
         method: GET
         status_code: 200
       register: health_check
+    - name: Validate health check result
+      assert:
+        that:
+          - health_check.status == 200
+        fail_msg: "Application health check failed"
+        success_msg: "Application deployed successfully"
