@@ -13,7 +13,8 @@
           - maven
         state: present
         update_cache: true
-        - name: Create Tomcat group
+
+    - name: Create Tomcat group
       group:
         name: "{{ tomcat_group }}"
         state: present
