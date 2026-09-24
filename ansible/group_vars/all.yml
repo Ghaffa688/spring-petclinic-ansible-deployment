@@ -1,0 +1,10 @@
+java_package: openjdk-17-jdk
+
+tomcat_version: 11.0.26
+tomcat_user: tomcat
+tomcat_group: tomcat
+
+tomcat_install_dir: /opt/tomcat
+
+petclinic_repo: https://github.com/spring-projects/spring-petclinic.git
+petclinic_source_dir: /opt/spring-petclinic
