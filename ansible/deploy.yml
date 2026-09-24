@@ -44,3 +44,21 @@
         src: "/opt/apache-tomcat-{{ tomcat_version }}"
         dest: "{{ tomcat_install_dir }}"
         state: link
+    - name: Install Tomcat service
+      template:
+        src: templates/tomcat.service.j2
+        dest: /etc/systemd/system/tomcat.service
+
+    - name: Reload systemd
+      systemd:
+        daemon_reload: true
+
+    - name: Enable Tomcat
+      systemd:
+        name: tomcat
+        enabled: true
+
+    - name: Start Tomcat
+      systemd:
+        name: tomcat
+        state: started
