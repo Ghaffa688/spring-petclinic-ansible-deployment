@@ -76,10 +76,14 @@
         remote_src: true
         src: "{{ petclinic_source_dir }}/target/petclinic.war"
         dest: "{{ tomcat_install_dir }}/webapps/petclinic.war"
-        
+
   handlers:
 
     - name: Restart Tomcat
       systemd:
         name: tomcat
         state: restarted
+    - name: Wait for Tomcat
+      wait_for:
+        port: 8080
+        timeout: 120
