@@ -39,15 +39,17 @@
         remote_src: true
         creates: "/opt/apache-tomcat-{{ tomcat_version }}"
 
-    - name: Create symbolic link
+    - name: Create Tomcat symlink
       file:
         src: "/opt/apache-tomcat-{{ tomcat_version }}"
         dest: "{{ tomcat_install_dir }}"
         state: link
+
     - name: Install Tomcat service
       template:
-        src: templates/tomcat.service.j2
+        src: tomcat.service.j2
         dest: /etc/systemd/system/tomcat.service
+      notify: Restart Tomcat
 
     - name: Reload systemd
       systemd:
@@ -62,20 +64,47 @@
       systemd:
         name: tomcat
         state: started
+
     - name: Clone Spring PetClinic repository
       git:
         repo: "{{ petclinic_repo }}"
         dest: "{{ petclinic_source_dir }}"
         version: main
+
     - name: Build Spring PetClinic
       command:
         cmd: mvn clean package -DskipTests
         chdir: "{{ petclinic_source_dir }}"
+
     - name: Deploy application WAR
       copy:
         remote_src: true
         src: "{{ petclinic_source_dir }}/target/petclinic.war"
         dest: "{{ tomcat_install_dir }}/webapps/petclinic.war"
+      notify: Restart Tomcat
+
+    - name: Wait for Tomcat
+      wait_for:
+        port: 8080
+        timeout: 120
+
+    - name: Perform application health check
+      uri:
+        url: "http://localhost:8080/petclinic/"
+        method: GET
+        status_code: 200
+      register: health_check
+
+    - name: Validate health check result
+      assert:
+        that:
+          - health_check.status == 200
+        fail_msg: "Application health check failed"
+        success_msg: "Application deployed successfully"
+
+    - name: Display application URL
+      debug:
+        msg: "Application available at http://localhost:8080/petclinic/"
 
   handlers:
 
@@ -83,22 +112,3 @@
       systemd:
         name: tomcat
         state: restarted
-    - name: Wait for Tomcat
-      wait_for:
-        port: 8080
-        timeout: 120
-    - name: Perform application health check
-      uri:
-        url: http://localhost:8080/petclinic/
-        method: GET
-        status_code: 200
-      register: health_check
-    - name: Validate health check result
-      assert:
-        that:
-          - health_check.status == 200
-        fail_msg: "Application health check failed"
-        success_msg: "Application deployed successfully"
-    - name: Display application URL
-      debug:
-        msg: "Application available at http://localhost:8080/petclinic/"
