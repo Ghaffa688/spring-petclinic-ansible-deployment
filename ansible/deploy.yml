@@ -99,3 +99,6 @@
           - health_check.status == 200
         fail_msg: "Application health check failed"
         success_msg: "Application deployed successfully"
+    - name: Display application URL
+      debug:
+        msg: "Application available at http://localhost:8080/petclinic/"
