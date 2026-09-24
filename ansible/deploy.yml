@@ -87,3 +87,9 @@
       wait_for:
         port: 8080
         timeout: 120
+    - name: Perform application health check
+      uri:
+        url: http://localhost:8080/petclinic/
+        method: GET
+        status_code: 200
+      register: health_check
