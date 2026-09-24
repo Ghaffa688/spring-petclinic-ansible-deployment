@@ -1,0 +1,15 @@
+---
+- name: Deploy Spring PetClinic
+  hosts: petclinic
+  become: true
+
+  tasks:
+
+    - name: Install required packages
+      apt:
+        name:
+          - openjdk-17-jdk
+          - git
+          - maven
+        state: present
+        update_cache: true
