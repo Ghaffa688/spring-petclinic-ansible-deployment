@@ -62,3 +62,8 @@
       systemd:
         name: tomcat
         state: started
+    - name: Clone Spring PetClinic repository
+      git:
+        repo: "{{ petclinic_repo }}"
+        dest: "{{ petclinic_source_dir }}"
+        version: main
